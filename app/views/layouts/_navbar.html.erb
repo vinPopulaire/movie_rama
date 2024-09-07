@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">MovieRama</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      </ul>
+      <ul class="nav navbar-nav ml-right">
+        <% if user_signed_in? %>
+            <li class="nav-item">
+              <%= button_to destroy_user_session_path, method: :delete, class: "nav-link" do %>
+                <span class="fas fa-sign-out"></span> Logout
+              <% end %>
+            </li>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= new_user_registration_path %>"><span class="fas fa-user"></span> Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= new_user_session_path %>"><span class="fas fa-sign-in"></span> Login</a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</nav>
