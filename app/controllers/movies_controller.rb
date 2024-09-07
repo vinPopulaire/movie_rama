@@ -3,7 +3,11 @@ class MoviesController < ApplicationController
   before_action :set_movie, only: [ :edit, :update, :destroy ]
 
   def index
-    @movies = Movie.includes(:user).all
+    if params[:filter] == "date"
+      @movies = Movie.includes(:user).order(created_at: :desc).all
+    else
+      @movies = Movie.includes(:user).all
+    end
   end
 
   def new

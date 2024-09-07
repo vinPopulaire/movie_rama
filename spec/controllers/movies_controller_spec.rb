@@ -20,6 +20,16 @@ RSpec.describe MoviesController, type: :controller do
 
       expect(response).to render_template('index')
     end
+
+    context 'when a date filtering is chosen' do
+      it 'assigns @movies with the correct ordering' do
+        older_movie = FactoryBot.create(:movie, created_at: 2.month.ago)
+        newer_movie = FactoryBot.create(:movie, created_at: 1.months.ago)
+
+        get :index, params: { filter: 'date' }
+        expect(assigns(:movies)).to eq([ newer_movie, older_movie ])
+      end
+    end
   end
 
   describe 'GET new' do
