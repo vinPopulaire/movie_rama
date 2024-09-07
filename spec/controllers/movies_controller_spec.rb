@@ -72,7 +72,7 @@ RSpec.describe MoviesController, type: :controller do
       it 'renders the new template with an error flash' do
         post :create, params: { movie: invalid_attributes }
 
-        expect(response).to render_template(:new)
+        expect(response).to redirect_to(new_movie_path)
       end
     end
   end
@@ -121,7 +121,7 @@ RSpec.describe MoviesController, type: :controller do
 
         movie.reload
         expect(movie.title).not_to be_empty
-        expect(response).to render_template(:edit)
+        expect(response).to redirect_to(edit_movie_path)
       end
     end
   end
