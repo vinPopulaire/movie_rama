@@ -1,5 +1,10 @@
 <div class="movie">
-  <%= link_to movie.title, movie_path(movie) %>
+  <h2>
+    <%= movie.title %>
+  </h2>
+  <div>
+    <%= movie.description %>
+  </div>
   <div class="movie__actions">
     <%= button_to "Delete",
                   movie_path(movie),
