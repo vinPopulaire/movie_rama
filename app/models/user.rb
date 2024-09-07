@@ -8,4 +8,8 @@ class User < ApplicationRecord
   validates :surname, presence: true
 
   has_many :movies, dependent: :destroy
+
+  def fullname
+    name + " " + surname
+  end
 end

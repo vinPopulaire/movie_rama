@@ -3,7 +3,7 @@
     <%= movie.title %>
   </h2>
   <div>
-    Posted by <%= movie.user.email %> <%= time_ago(movie.created_at) %>
+    Posted by <%= movie.user.fullname %> <%= time_ago(movie.created_at) %>
   </div>
   <div>
     <%= movie.description %>

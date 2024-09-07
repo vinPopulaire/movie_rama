@@ -7,4 +7,14 @@ RSpec.describe User, type: :model do
   it { is_expected.to validate_presence_of :surname }
   it { is_expected.to validate_presence_of :email }
   it { is_expected.to validate_presence_of :password }
+
+  describe '#fullname' do
+    let(:name) { "Foo" }
+    let(:surname) { "Bar" }
+    let!(:user) { FactoryBot.create(:user) }
+
+    it 'returns the correct full name' do
+      expect(user.fullname).to eq('Foo Bar')
+    end
+  end
 end
