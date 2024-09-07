@@ -12,7 +12,11 @@ USERS_NUM = 10
 MOVIES_NUM = 30
 
 USERS_NUM.times do
-  User.create!(email: Faker::Internet.email, password: "12341234")
+  User.create!(
+    email: Faker::Internet.email,
+    name: Faker::Name.first_name,
+    surname: Faker::Name.last_name,
+    password: "12341234")
 end
 
 users = User.all.to_a
