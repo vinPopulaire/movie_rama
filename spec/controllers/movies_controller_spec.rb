@@ -43,6 +43,27 @@ RSpec.describe MoviesController, type: :controller do
         expect(assigns(:movies)).to eq([ movie1 ])
       end
     end
+
+    context 'pagination' do
+      before do
+        @movies = FactoryBot.create_list(:movie, 25)
+      end
+      it 'displays the correct number of movies per page' do
+        get :index
+        expect(assigns(:movies).size).to eq(10)
+      end
+
+      it 'displays the correct movies on subsequent pages' do
+        get :index, params: { page: 2 }
+        expect(assigns(:movies).size).to eq(10)
+        expect(assigns(:movies)).to include(@movies[10])
+      end
+
+      it 'does not display movies from other pages' do
+        get :index
+        expect(assigns(:movies)).to_not include(@movies[20])
+      end
+    end
   end
 
   describe 'GET new' do
