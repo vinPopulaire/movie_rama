@@ -7,4 +7,8 @@ module ApplicationHelper
       notice: "alert-info"
     }.stringify_keys[flash_type.to_s] || flash_type.to_s
   end
+
+  def time_ago(timestamp)
+    distance_of_time_in_words(Time.now, timestamp) + " ago"
+  end
 end
