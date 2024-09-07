@@ -7,3 +7,21 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+USERS_NUM = 10
+MOVIES_NUM = 30
+
+USERS_NUM.times do
+  User.create!(email: Faker::Internet.email, password: "12341234")
+end
+
+users = User.all.to_a
+
+MOVIES_NUM.times do |n|
+  Movie.create!(
+    title: Faker::Movie.title,
+    description: Faker::Lorem.paragraph(sentence_count: rand(30..60)),
+    user_id: users.sample.id,
+    created_at: Faker::Date.between(from: '2014-09-23', to: '2024-08-25')
+  )
+end
