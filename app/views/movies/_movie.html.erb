@@ -5,13 +5,15 @@
   <div>
     <%= movie.description %>
   </div>
-  <div class="movie__actions">
-    <%= button_to "Delete",
-                  movie_path(movie),
-                  method: :delete,
+  <% if user_signed_in? %>
+    <div class="movie__actions">
+      <%= button_to "Delete",
+                    movie_path(movie),
+                    method: :delete,
+                    class: "btn btn--light" %>
+      <%= link_to "Edit",
+                  edit_movie_path(movie),
                   class: "btn btn--light" %>
-    <%= link_to "Edit",
-                edit_movie_path(movie),
-                class: "btn btn--light" %>
-  </div>
+    </div>
+  <% end %>
 </div>
