@@ -5,6 +5,14 @@ class MoviesController < ApplicationController
   def index
     if params[:filter] == "date"
       @movies = Movie.includes(:user).order(created_at: :desc).all
+    elsif params[:filter] == "user"
+      user = User.find_by(id: params[:user_id])
+
+      if user.present?
+        @movies = user.movies.all
+      else
+        redirect_to movies_path, notice: "User not found"
+      end
     else
       @movies = Movie.includes(:user).all
     end

@@ -30,6 +30,19 @@ RSpec.describe MoviesController, type: :controller do
         expect(assigns(:movies)).to eq([ newer_movie, older_movie ])
       end
     end
+
+    context 'when a user filters is chosen' do
+      let(:user1) { FactoryBot.create(:user) }
+      let(:user2) { FactoryBot.create(:user) }
+
+      let!(:movie1) { FactoryBot.create(:movie, user: user1) }
+      let!(:movie2) { FactoryBot.create(:movie, user: user2) }
+
+      it 'assigns @movies only of the correct user' do
+        get :index, params: { filter: 'user', user_id: user1.id }
+        expect(assigns(:movies)).to eq([ movie1 ])
+      end
+    end
   end
 
   describe 'GET new' do
