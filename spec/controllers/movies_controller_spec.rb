@@ -23,105 +23,153 @@ RSpec.describe MoviesController, type: :controller do
   end
 
   describe 'GET new' do
-    it 'assigns @movie' do
-      get :new
-      expect(assigns(:movie)).to be_a_new(Movie)
+    context 'when user is authenticated' do
+      before do
+        user = FactoryBot.create(:user)
+        sign_in user
+      end
+
+      it 'assigns @movie' do
+        get :new
+        expect(assigns(:movie)).to be_a_new(Movie)
+      end
+
+      it 'renders the new template' do
+        get :new
+        expect(response).to render_template('new')
+      end
     end
 
-    it 'renders the new template' do
-      get :new
-      expect(response).to render_template('new')
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        get :new
+        expect(response).to redirect_to(new_user_session_path)
+      end
     end
   end
 
   describe 'POST create' do
-    let(:user) { FactoryBot.create(:user) }
+    context 'when user is authenticated' do
+      before do
+        user = FactoryBot.create(:user)
+        sign_in user
+      end
 
-    before do
-      allow(controller).to receive(:current_user).and_return(user)
-    end
+      context 'with valid attributes' do
+        let(:valid_attributes) { { title: 'foo', description: 'bar' } }
 
-    context 'with valid attributes' do
-      let(:valid_attributes) { { title: 'foo', description: 'bar' } }
+        it 'creates a new movie and assigns it to @movie' do
+          expect {
+            post :create, params: { movie: valid_attributes }
+          }.to change(Movie, :count).by(1)
 
-      it 'creates a new movie and assigns it to @movie' do
-        expect {
+          expect(assigns(:movie)).to be_a(Movie)
+          expect(assigns(:movie)).to be_persisted
+        end
+
+        it 'redirects to the movies index with a success notice' do
           post :create, params: { movie: valid_attributes }
-        }.to change(Movie, :count).by(1)
 
-        expect(assigns(:movie)).to be_a(Movie)
-        expect(assigns(:movie)).to be_persisted
+          expect(response).to redirect_to(movies_path)
+        end
       end
 
-      it 'redirects to the movies index with a success notice' do
-        post :create, params: { movie: valid_attributes }
+      context 'with invalid attributes' do
+        let(:invalid_attributes) { { title: '', description: 'bar' } }
 
-        expect(response).to redirect_to(movies_path)
+        it 'does not create a new movie' do
+          expect {
+            post :create, params: { movie: invalid_attributes }
+          }.to_not change(Movie, :count)
+        end
+
+        it 'renders the new template with an error flash' do
+          post :create, params: { movie: invalid_attributes }
+
+          expect(response).to redirect_to(new_movie_path)
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      let(:invalid_attributes) { { title: '', description: 'bar' } }
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        post :create
 
-      it 'does not create a new movie' do
-        expect {
-          post :create, params: { movie: invalid_attributes }
-        }.to_not change(Movie, :count)
-      end
-
-      it 'renders the new template with an error flash' do
-        post :create, params: { movie: invalid_attributes }
-
-        expect(response).to redirect_to(new_movie_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
 
   describe 'GET edit' do
-    let(:movie) { FactoryBot.create(:movie) }
+    context 'when user is authenticated' do
+      before do
+        user = FactoryBot.create(:user)
+        sign_in user
+      end
 
-    it 'assigns the requested movie to @movie' do
-      get :edit, params: { id: movie.id }
-      expect(assigns(:movie)).to eq(movie)
+      let(:movie) { FactoryBot.create(:movie) }
+
+      it 'assigns the requested movie to @movie' do
+        get :edit, params: { id: movie.id }
+        expect(assigns(:movie)).to eq(movie)
+      end
+
+      it 'renders the edit template' do
+        get :edit, params: { id: movie.id }
+        expect(response).to render_template('edit')
+      end
     end
 
-    it 'renders the edit template' do
-      get :edit, params: { id: movie.id }
-      expect(response).to render_template('edit')
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        post :create
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
     end
   end
 
   describe 'PATCH update' do
     let(:movie) { FactoryBot.create(:movie) }
-    let(:user) { FactoryBot.create(:user) }
 
-    before do
-      allow(controller).to receive(:current_user).and_return(user)
-    end
+    context 'when user is authenticated' do
+      before do
+        user = FactoryBot.create(:user)
+        sign_in user
+      end
 
-    context 'with valid attributes' do
-      let(:valid_attributes) { { title: 'foo', description: 'bar' } }
+      context 'with valid attributes' do
+        let(:valid_attributes) { { title: 'foo', description: 'bar' } }
 
-      it 'updates the movie and redirects to the movies index with a success notice' do
-        patch :update, params: { id: movie.id, movie: valid_attributes }
+        it 'updates the movie and redirects to the movies index with a success notice' do
+          patch :update, params: { id: movie.id, movie: valid_attributes }
 
-        movie.reload
-        expect(movie.title).to eq('foo')
-        expect(movie.description).to eq('bar')
-        expect(response).to redirect_to(movies_path)
-        expect(flash[:notice]).to eq('Movie was successfully updated.')
+          movie.reload
+          expect(movie.title).to eq('foo')
+          expect(movie.description).to eq('bar')
+          expect(response).to redirect_to(movies_path)
+          expect(flash[:notice]).to eq('Movie was successfully updated.')
+        end
+      end
+
+      context 'with invalid attributes' do
+        let(:invalid_attributes) { { title: '', description: 'Updated description' } }
+
+        it 'does not update the movie and re-renders the edit template' do
+          patch :update, params: { id: movie.id, movie: invalid_attributes }
+
+          movie.reload
+          expect(movie.title).not_to be_empty
+          expect(response).to redirect_to(edit_movie_path)
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      let(:invalid_attributes) { { title: '', description: 'Updated description' } }
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        patch :update, params: { id: movie.id }
 
-      it 'does not update the movie and re-renders the edit template' do
-        patch :update, params: { id: movie.id, movie: invalid_attributes }
-
-        movie.reload
-        expect(movie.title).not_to be_empty
-        expect(response).to redirect_to(edit_movie_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
@@ -129,13 +177,28 @@ RSpec.describe MoviesController, type: :controller do
   describe 'DELETE destroy' do
     let!(:movie) { FactoryBot.create(:movie) }
 
-    it 'deletes the movie and redirects to the movies index with a success notice' do
-      expect {
-        delete :destroy, params: { id: movie.id }
-      }.to change(Movie, :count).by(-1)
+    context 'when user is authenticated' do
+      before do
+        user = FactoryBot.create(:user)
+        sign_in user
+      end
 
-      expect(response).to redirect_to(movies_path)
-      expect(flash[:notice]).to eq('Movie was successfully destroyed.')
+      it 'deletes the movie and redirects to the movies index with a success notice' do
+        expect {
+          delete :destroy, params: { id: movie.id }
+        }.to change(Movie, :count).by(-1)
+
+        expect(response).to redirect_to(movies_path)
+        expect(flash[:notice]).to eq('Movie was successfully destroyed.')
+      end
+    end
+
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        delete :destroy, params: { id: movie.id }
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
     end
   end
 end

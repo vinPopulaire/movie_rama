@@ -1,4 +1,5 @@
 class MoviesController < ApplicationController
+  before_action :authenticate_user!, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :set_movie, only: [ :edit, :update, :destroy ]
 
   def index
