@@ -1,0 +1,9 @@
+<main class="container">
+  <%= link_to sanitize("&larr; Back to moves"), movies_path %>
+
+  <div class="header">
+    <h1>New movie</h1>
+  </div>
+
+  <%= render "form", movie: @movie %>
+</main>

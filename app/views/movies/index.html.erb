@@ -1,0 +1,10 @@
+<main class="container">
+  <div class="header">
+    <h1>Movies</h1>
+    <%= link_to "New movie",
+                new_movie_path,
+                class: "btn btn--primary" %>
+  </div>
+
+  <%= render @movies %>
+</main>
