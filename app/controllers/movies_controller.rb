@@ -53,7 +53,9 @@ class MoviesController < ApplicationController
   private
 
   def set_movie
-    @movie = Movie.find(params[:id])
+    @movie = Movie.find_by(id: params[:id], user: current_user)
+
+    redirect_to movies_path, notice: "You are not allowed to edit that movie" unless @movie.present?
   end
 
   def movie_params

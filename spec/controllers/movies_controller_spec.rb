@@ -1,6 +1,30 @@
 require 'rails_helper'
 
 RSpec.describe MoviesController, type: :controller do
+  shared_context 'actions without permission' do
+    context 'when user is authenticated but the movie is of another user' do
+      before { sign_in user }
+
+      let(:other_user) { FactoryBot.create(:user) }
+      let(:movie) { FactoryBot.create(:movie, user: other_user) }
+
+      it 'redirects to the movie index with an error message' do
+        subject
+
+        expect(response).to redirect_to(movies_path)
+        expect(flash[:notice]).to eq('You are not allowed to edit that movie')
+      end
+    end
+
+    context 'when user is not authenticated' do
+      it 'redirects to the login' do
+        subject
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
   describe 'GET index' do
     it 'returns a successful response' do
       get :index
@@ -145,48 +169,44 @@ RSpec.describe MoviesController, type: :controller do
   end
 
   describe 'GET edit' do
-    context 'when user is authenticated' do
-      before do
-        user = FactoryBot.create(:user)
-        sign_in user
-      end
+    let(:user) { FactoryBot.create(:user) }
+    let(:movie) { FactoryBot.create(:movie, user: user) }
 
-      let(:movie) { FactoryBot.create(:movie) }
+    subject { get :edit, params: { id: movie.id } }
+
+    context 'when user is authenticated' do
+      before { sign_in user }
 
       it 'assigns the requested movie to @movie' do
-        get :edit, params: { id: movie.id }
+        subject
+
         expect(assigns(:movie)).to eq(movie)
       end
 
       it 'renders the edit template' do
-        get :edit, params: { id: movie.id }
+        subject
+
         expect(response).to render_template('edit')
       end
     end
 
-    context 'when user is not authenticated' do
-      it 'redirects to the login' do
-        post :create
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like 'actions without permission'
   end
 
   describe 'PATCH update' do
-    let(:movie) { FactoryBot.create(:movie) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:movie) { FactoryBot.create(:movie, user: user) }
+
+    let(:attributes) { { title: 'foo', description: 'bar' } }
+
+    subject { patch :update, params: { id: movie.id, movie: attributes } }
 
     context 'when user is authenticated' do
-      before do
-        user = FactoryBot.create(:user)
-        sign_in user
-      end
+      before { sign_in user }
 
       context 'with valid attributes' do
-        let(:valid_attributes) { { title: 'foo', description: 'bar' } }
-
         it 'updates the movie and redirects to the movies index with a success notice' do
-          patch :update, params: { id: movie.id, movie: valid_attributes }
+          subject
 
           movie.reload
           expect(movie.title).to eq('foo')
@@ -197,10 +217,10 @@ RSpec.describe MoviesController, type: :controller do
       end
 
       context 'with invalid attributes' do
-        let(:invalid_attributes) { { title: '', description: 'Updated description' } }
+        let(:attributes) { { title: '', description: 'Updated description' } }
 
         it 'does not update the movie and re-renders the edit template' do
-          patch :update, params: { id: movie.id, movie: invalid_attributes }
+          subject
 
           movie.reload
           expect(movie.title).not_to be_empty
@@ -209,40 +229,26 @@ RSpec.describe MoviesController, type: :controller do
       end
     end
 
-    context 'when user is not authenticated' do
-      it 'redirects to the login' do
-        patch :update, params: { id: movie.id }
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like 'actions without permission'
   end
 
   describe 'DELETE destroy' do
-    let!(:movie) { FactoryBot.create(:movie) }
+    let(:user) { FactoryBot.create(:user) }
+    let!(:movie) { FactoryBot.create(:movie, user: user) }
+
+    subject { delete :destroy, params: { id: movie.id } }
 
     context 'when user is authenticated' do
-      before do
-        user = FactoryBot.create(:user)
-        sign_in user
-      end
+      before { sign_in user }
 
       it 'deletes the movie and redirects to the movies index with a success notice' do
-        expect {
-          delete :destroy, params: { id: movie.id }
-        }.to change(Movie, :count).by(-1)
+        expect { subject }.to change(Movie, :count).by(-1)
 
         expect(response).to redirect_to(movies_path)
         expect(flash[:notice]).to eq('Movie was successfully destroyed.')
       end
     end
 
-    context 'when user is not authenticated' do
-      it 'redirects to the login' do
-        delete :destroy, params: { id: movie.id }
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like 'actions without permission'
   end
 end

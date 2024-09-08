@@ -11,7 +11,7 @@
   <div>
     <%= movie.description %>
   </div>
-  <% if user_signed_in? %>
+  <% if user_signed_in? && movie.user == current_user %>
     <div class="movie__actions">
       <%= button_to "Delete",
                     movie_path(movie),
