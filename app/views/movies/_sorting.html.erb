@@ -1,0 +1,18 @@
+<div class="header border border-dark rounded mt-3 bg-light-gray">
+  <ul class="align-middle list-unstyled p-3 m-0">
+    <li class="d-inline">
+      Sort By:
+    </li>
+    <li class="d-inline">
+      <%= link_to "Likes", movies_path(filter: 'likes') %>
+    </li>
+    <li class="d-inline"> | </li>
+    <li class="d-inline">
+      <%= link_to "Hates", movies_path(filter: 'hates') %>
+    </li>
+    <li class="d-inline"> | </li>
+    <li class="d-inline">
+      <%= link_to "Date", movies_path(filter: 'date') %>
+    </li>
+  </ul>
+</div>
