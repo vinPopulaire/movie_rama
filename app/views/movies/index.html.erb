@@ -1,20 +1,19 @@
 <main class="container">
   <div class="header">
-    <ul>
-      <li>
-        <%= link_to "Likes",
-                    movies_path(filter: 'likes'),
-                    class: "btn btn--primary" %>
+    <ul clss="list-unstyled">
+      <li class="d-inline">
+        Sort By:
       </li>
-      <li>
-        <%= link_to "Hates",
-                    movies_path(filter: 'hates'),
-                    class: "btn btn--primary" %>
+      <li class="d-inline">
+        <%= link_to "Likes", movies_path(filter: 'likes') %>
       </li>
-      <li>
-        <%= link_to "Date",
-                    movies_path(filter: 'date'),
-                    class: "btn btn--primary" %>
+      <li class="d-inline"> | </li>
+      <li class="d-inline">
+        <%= link_to "Hates", movies_path(filter: 'hates') %>
+      </li>
+      <li class="d-inline"> | </li>
+      <li class="d-inline">
+        <%= link_to "Date", movies_path(filter: 'date') %>
       </li>
     </ul>
   </div>
