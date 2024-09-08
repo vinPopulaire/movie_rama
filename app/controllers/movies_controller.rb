@@ -5,6 +5,10 @@ class MoviesController < ApplicationController
   def index
     if params[:filter] == "date"
       @movies = Movie.order(created_at: :desc)
+    elsif params[:filter] == "likes"
+      @movies = Movie.order_by_likes
+    elsif params[:filter] == "hates"
+      @movies = Movie.order_by_hates
     elsif params[:filter] == "user"
       user = User.find_by(id: params[:user_id])
 
