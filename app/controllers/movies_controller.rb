@@ -4,7 +4,7 @@ class MoviesController < ApplicationController
 
   def index
     if params[:filter] == "date"
-      @movies = Movie.includes(:user).order(created_at: :desc)
+      @movies = Movie.order(created_at: :desc)
     elsif params[:filter] == "user"
       user = User.find_by(id: params[:user_id])
 
@@ -14,10 +14,11 @@ class MoviesController < ApplicationController
         redirect_to movies_path, notice: "User not found"
       end
     else
-      @movies = Movie.includes(:user).order(id: :desc)
+      @movies = Movie.order(id: :desc)
     end
 
-    @movies = @movies.paginate(page: params[:page], per_page: 10)
+    @movies = @movies.includes(:user, :hates, :likes).
+                      paginate(page: params[:page], per_page: 10)
   end
 
   def new
