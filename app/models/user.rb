@@ -4,10 +4,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  has_many :movies, dependent: :destroy
+  has_many :user_movie_preferences, dependent: :destroy
+
   validates :name, presence: true
   validates :surname, presence: true
-
-  has_many :movies, dependent: :destroy
 
   def fullname
     name + " " + surname
