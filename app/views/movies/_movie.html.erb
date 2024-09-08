@@ -1,8 +1,8 @@
-<div class="movie">
+<div class="movie border border-dark rounded p-3 my-3">
   <h2>
     <%= movie.title %>
   </h2>
-  <div>
+  <div class="py-2">
     Posted by
     <%= link_to movie.user.fullname,
                 movies_path(filter: 'user', user_id: movie.user.id) %>
@@ -12,14 +12,14 @@
     <%= movie.description %>
   </div>
   <% if user_signed_in? && movie.user == current_user %>
-    <div class="movie__actions">
-      <%= button_to "Delete",
-                    movie_path(movie),
-                    method: :delete,
-                    class: "btn btn--light" %>
-      <%= link_to "Edit",
-                  edit_movie_path(movie),
-                  class: "btn btn--light" %>
-    </div>
+    <ul class="align-middle list-unstyled p-3 m-0">
+      <li class="d-inline">
+        <%= link_to 'Delete', movie_path(movie),
+          data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
+      </li>
+      <li class="d-inline">
+        <%= link_to "Edit", edit_movie_path(movie) %>
+      </li>
+    </ul>
   <% end %>
 </div>
