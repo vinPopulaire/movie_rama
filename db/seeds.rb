@@ -29,3 +29,17 @@ MOVIES_NUM.times do |n|
     created_at: Faker::Date.between(from: '2014-09-23', to: '2024-08-25')
   )
 end
+
+movies = Movie.all.to_a
+
+users.each do |user|
+  movies_to_vote = movies.sample(rand(10..20)).pluck(:id)
+
+  movies_to_vote.each do |movie_id|
+    UserMoviePreference.create!(
+      movie_id: movie_id,
+      user_id: user.id,
+      action: rand(2)
+    )
+  end
+end
