@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_07_204548) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_08_112236) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,18 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_07_204548) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_movies_on_user_id"
+  end
+
+  create_table "user_movie_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "movie_id", null: false
+    t.integer "action", limit: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movie_id", "action"], name: "index_preference_on_movie_id_action"
+    t.index ["movie_id"], name: "index_user_movie_preferences_on_movie_id"
+    t.index ["user_id", "movie_id"], name: "index_preference_on_user_id_movie_id", unique: true
+    t.index ["user_id"], name: "index_user_movie_preferences_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -36,4 +48,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_07_204548) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "user_movie_preferences", "movies"
+  add_foreign_key "user_movie_preferences", "users"
 end
