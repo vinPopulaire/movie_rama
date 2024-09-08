@@ -22,4 +22,13 @@
       </li>
     </ul>
   <% end %>
+
+  <ul class="align-middle list-unstyled p-3 m-0">
+    <li class="d-inline">
+      <%= movie.like_count.to_s + " likes" %>
+    </li>
+    <li class="d-inline">
+      <%= movie.hate_count.to_s + " hates" %>
+    </li>
+  </ul>
 </div>

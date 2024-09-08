@@ -5,4 +5,12 @@ class Movie < ApplicationRecord
   validates :title, presence: true
   validates :description, presence: true
   validates :user, presence: true
+
+  def like_count
+    user_movie_preferences.like.count
+  end
+
+  def hate_count
+    user_movie_preferences.hate.count
+  end
 end
