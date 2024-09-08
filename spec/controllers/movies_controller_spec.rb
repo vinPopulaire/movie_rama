@@ -85,7 +85,7 @@ RSpec.describe MoviesController, type: :controller do
 
       it 'does not display movies from other pages' do
         get :index
-        expect(assigns(:movies)).to_not include(@movies[20])
+        expect(assigns(:movies)).to_not include(@movies[1])
       end
     end
   end

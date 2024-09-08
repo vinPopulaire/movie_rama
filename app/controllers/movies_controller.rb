@@ -14,7 +14,7 @@ class MoviesController < ApplicationController
         redirect_to movies_path, notice: "User not found"
       end
     else
-      @movies = Movie.includes(:user)
+      @movies = Movie.includes(:user).order(id: :desc)
     end
 
     @movies = @movies.paginate(page: params[:page], per_page: 10)
