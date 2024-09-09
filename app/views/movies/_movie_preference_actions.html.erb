@@ -1,8 +1,21 @@
-<ul class="align-middle list-unstyled p-3 m-0">
-  <li class="d-inline">
-    <%= relevant_preferences_like_link(movie, @user_movie_preferences) %>
-  </li>
-  <li class="d-inline">
-    <%= relevant_preferences_hate_link(movie, @user_movie_preferences) %>
-  </li>
-</ul>
+<% if user_signed_in? %>
+  <ul class="align-middle list-unstyled p-3 m-0">
+    <li class="d-inline">
+      <%= relevant_preferences_like_link(movie, @user_movie_preferences) %>
+    </li>
+    <li class="d-inline"> | </li>
+    <li class="d-inline">
+      <%= relevant_preferences_hate_link(movie, @user_movie_preferences) %>
+    </li>
+  </ul>
+<% else %>
+  <ul class="align-middle list-unstyled p-3 m-0">
+    <li class="d-inline">
+      <%= movie.like_count.to_s + " likes" %>
+    </li>
+    <li class="d-inline"> | </li>
+    <li class="d-inline">
+      <%= movie.hate_count.to_s + " hates" %>
+    </li>
+  </ul>
+<% end %>
