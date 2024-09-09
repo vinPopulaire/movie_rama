@@ -34,6 +34,48 @@ RSpec.describe Movie, type: :model do
     end
   end
 
+  describe '.order_by_likes' do
+    let(:movie_neutral) { FactoryBot.create(:movie) }
+    let(:movie_liked) { FactoryBot.create(:movie) }
+    let(:movie_hated) { FactoryBot.create(:movie) }
+
+    subject { Movie.order_by_likes }
+
+    before do
+      FactoryBot.create_list(:user_movie_preference, 5, :like, movie: movie_liked)
+      FactoryBot.create_list(:user_movie_preference, 3, :like, movie: movie_neutral)
+      FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_hated)
+      FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_liked)
+      FactoryBot.create_list(:user_movie_preference, 3, :hate, movie: movie_neutral)
+      FactoryBot.create_list(:user_movie_preference, 5, :hate, movie: movie_hated)
+    end
+
+    it 'returns the movies with the correct ordering' do
+      expect(subject).to eq([ movie_liked, movie_neutral, movie_hated ])
+    end
+  end
+
+  describe '.order_by_hates' do
+    let(:movie_neutral) { FactoryBot.create(:movie) }
+    let(:movie_liked) { FactoryBot.create(:movie) }
+    let(:movie_hated) { FactoryBot.create(:movie) }
+
+    subject { Movie.order_by_hates }
+
+    before do
+      FactoryBot.create_list(:user_movie_preference, 5, :like, movie: movie_liked)
+      FactoryBot.create_list(:user_movie_preference, 3, :like, movie: movie_neutral)
+      FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_hated)
+      FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_liked)
+      FactoryBot.create_list(:user_movie_preference, 3, :hate, movie: movie_neutral)
+      FactoryBot.create_list(:user_movie_preference, 5, :hate, movie: movie_hated)
+    end
+
+    it 'returns the movies with the correct ordering' do
+      expect(subject).to eq([ movie_hated, movie_neutral, movie_liked ])
+    end
+  end
+
   describe '#like_count' do
     let(:movie) { FactoryBot.create(:movie) }
     let(:other_movie) { FactoryBot.create(:movie) }

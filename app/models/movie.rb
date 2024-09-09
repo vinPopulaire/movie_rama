@@ -9,17 +9,15 @@ class Movie < ApplicationRecord
   validates :user, presence: true
 
   def self.order_by_likes
-    Movie.select("movies.*, COUNT(movies.id) AS like_count").
-          left_joins(:likes).
-          group("movies.id").
-          order("like_count DESC")
+    Movie.left_joins(:likes).
+      group("movies.id").
+      order("COUNT(user_movie_preferences.id) DESC")
   end
 
   def self.order_by_hates
-    Movie.select("movies.*, COUNT(movies.id) AS hate_count").
-          left_joins(:hates).
-          group("movies.id").
-          order("hate_count DESC")
+    Movie.left_joins(:hates).
+      group("movies.id").
+      order("COUNT(user_movie_preferences.id) DESC")
   end
 
   # TODO: Fix needed, this will not perform well with many likes and dislikes because if will fetch all likes into memory
