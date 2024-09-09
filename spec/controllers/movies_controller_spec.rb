@@ -26,17 +26,33 @@ RSpec.describe MoviesController, type: :controller do
   end
 
   describe 'GET index' do
+    let(:movie) { FactoryBot.create(:movie) }
+    let(:movie2) { FactoryBot.create(:movie) }
+    let(:user) { FactoryBot.create(:user) }
+    let!(:preference) { FactoryBot.create(:user_movie_preference, :like, movie: movie, user: user) }
+
     it 'returns a successful response' do
       get :index
       expect(response).to be_successful
     end
 
     it 'assigns @movies' do
-      movie = FactoryBot.create(:movie)
-      movie2 = FactoryBot.create(:movie)
-
       get :index
       expect(assigns(:movies)).to match_array([ movie, movie2 ])
+    end
+
+    it 'does not assign @user_movie_preferences' do
+      get :index
+      expect(assigns(:user_movie_preferences)).to be_nil
+    end
+
+    context 'when the user is logged in' do
+      before { sign_in user }
+
+      it 'assigns @user_movie_preferences' do
+        get :index
+        expect(assigns(:user_movie_preferences)).to eq({ movie.id => preference })
+      end
     end
 
     it 'renders the index template' do
@@ -46,12 +62,12 @@ RSpec.describe MoviesController, type: :controller do
     end
 
     context 'when a date filtering is chosen' do
-      it 'assigns @movies with the correct ordering' do
-        older_movie = FactoryBot.create(:movie, created_at: 2.month.ago)
-        newer_movie = FactoryBot.create(:movie, created_at: 1.months.ago)
+      let!(:movie) { FactoryBot.create(:movie, created_at: 2.month.ago) }
+      let!(:movie2) { FactoryBot.create(:movie, created_at: 1.month.ago) }
 
+      it 'assigns @movies with the correct ordering' do
         get :index, params: { filter: 'date' }
-        expect(assigns(:movies)).to eq([ newer_movie, older_movie ])
+        expect(assigns(:movies)).to eq([ movie2, movie ])
       end
     end
 

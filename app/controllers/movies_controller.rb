@@ -23,6 +23,8 @@ class MoviesController < ApplicationController
 
     @movies = @movies.includes(:user, :hates, :likes).
                       paginate(page: params[:page], per_page: 10)
+
+    @user_movie_preferences = current_user&.user_movie_preferences&.where(movie: @movies)&.index_by(&:movie_id)
   end
 
   def new
