@@ -2,6 +2,7 @@ class UserMoviePreferencesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_action, only: [ :create, :update ]
   before_action :set_movie, only: [ :create, :update, :destroy ]
+  before_action :check_user_is_not_uploader
   before_action :set_user_movie_preference, only: [ :update, :destroy ]
 
   def create
@@ -45,5 +46,9 @@ class UserMoviePreferencesController < ApplicationController
     @user_movie_preference = UserMoviePreference.find_by(id: params[:id], user: current_user)
 
     redirect_to movies_path, alert: "You have not voted the movie yet" unless @user_movie_preference.present?
+  end
+
+  def check_user_is_not_uploader
+    redirect_to movies_path, alert: "You cannot vote your own movie" if @movie.user == current_user
   end
 end

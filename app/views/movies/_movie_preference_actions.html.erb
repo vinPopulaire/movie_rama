@@ -1,4 +1,4 @@
-<% if user_signed_in? %>
+<% if user_signed_in? && movie.user != current_user %>
   <ul class="align-middle list-unstyled p-3 m-0">
     <li class="d-inline">
       <%= relevant_preferences_like_link(movie, @user_movie_preferences) %>
