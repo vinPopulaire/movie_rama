@@ -1,58 +1,57 @@
-<% like_count = @like_count[movie.id] || 0 %>
-<% hate_count = @hate_count[movie.id] || 0 %>
-
-<div class="d-flex">
-  <div class="me-auto">
-    <% if user_signed_in? && movie.user != current_user %>
-      <% if (like_count + hate_count) == 0 %>
-        <ul class="list-unstyled p-3 m-0">
-          <li class="d-inline">
-            Be the first to vote for this movie:
-          </li>
-          <li class="d-inline">
-            <%= relevant_preferences_link(movie, @user_movie_preferences, 'Like', :like) %>
-          </li>
-          <li class="d-inline"> | </li>
-          <li class="d-inline">
-            <%= relevant_preferences_link(movie, @user_movie_preferences, 'Hate', :hate) %>
-          </li>
-        </ul>
+<%= turbo_frame_tag "movie_#{movie.id}" do %>
+  <div class="d-flex">
+    <div class="me-auto">
+      <% if user_signed_in? && movie.user != current_user %>
+        <% if (like_count + hate_count) == 0 %>
+          <ul class="list-unstyled p-3 m-0">
+            <li class="d-inline">
+              Be the first to vote for this movie:
+            </li>
+            <li class="d-inline">
+              <%= relevant_preferences_link(movie, user_movie_preference, 'Like', :like) %>
+            </li>
+            <li class="d-inline"> | </li>
+            <li class="d-inline">
+              <%= relevant_preferences_link(movie, user_movie_preference, 'Hate', :hate) %>
+            </li>
+          </ul>
+        <% else %>
+          <ul class="list-unstyled p-3 m-0">
+            <li class="d-inline">
+              <%= relevant_preferences_link(movie, user_movie_preference, like_count.to_s + " likes", :like) %>
+            </li>
+            <li class="d-inline"> | </li>
+            <li class="d-inline">
+              <%= relevant_preferences_link(movie, user_movie_preference, hate_count.to_s + " hates", :hate) %>
+            </li>
+          </ul>
+        <% end %>
       <% else %>
         <ul class="list-unstyled p-3 m-0">
           <li class="d-inline">
-            <%= relevant_preferences_link(movie, @user_movie_preferences, like_count.to_s + " likes", :like) %>
+            <%= like_count.to_s + " likes" %>
           </li>
           <li class="d-inline"> | </li>
           <li class="d-inline">
-            <%= relevant_preferences_link(movie, @user_movie_preferences, hate_count.to_s + " hates", :hate) %>
+            <%= hate_count.to_s + " hates" %>
           </li>
         </ul>
       <% end %>
-    <% else %>
-      <ul class="list-unstyled p-3 m-0">
-        <li class="d-inline">
-          <%= like_count.to_s + " likes" %>
-        </li>
-        <li class="d-inline"> | </li>
-        <li class="d-inline">
-          <%= hate_count.to_s + " hates" %>
-        </li>
-      </ul>
+    </div>
+
+    <% if user_movie_preference.present? %>
+      <div>
+        <ul class="list-unstyled p-3 m-0">
+          <li class="d-inline">
+            You <%= user_movie_preference.action %> this movie
+          </li>
+          <li class="d-inline"> | </li>
+          <li class="d-inline">
+            <%= link_to "Un#{user_movie_preference.action}", user_movie_preference_path(id: user_movie_preference.id, movie_id: movie.id),
+                data: { turbo_method: :delete } %>
+          </li>
+        </ul>
+      </div>
     <% end %>
   </div>
-
-  <% if (preference = @user_movie_preferences&.dig(movie.id)).present? %>
-    <div>
-      <ul class="list-unstyled p-3 m-0">
-        <li class="d-inline">
-          You <%= preference.action %> this movie
-        </li>
-        <li class="d-inline"> | </li>
-        <li class="d-inline">
-          <%= link_to "Un#{preference.action}", user_movie_preference_path(id: preference.id, movie_id: movie.id),
-              data: { turbo_method: :delete } %>
-        </li>
-      </ul>
-    </div>
-  <% end %>
-</div>
+<% end %>

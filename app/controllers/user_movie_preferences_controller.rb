@@ -9,23 +9,77 @@ class UserMoviePreferencesController < ApplicationController
     @user_movie_preference = UserMoviePreference.new(user: current_user, movie: @movie, action: @action)
 
     if @user_movie_preference.save
-      redirect_to movies_path, notice: "Thanks for voting!"
+      respond_to do |format|
+        format.html { redirect_to movies_path, notice: "Thanks for voting!" }
+        format.turbo_stream do
+          flash.now[:notice] = "Thanks for voting!"
+          render turbo_stream: [
+                   turbo_stream.replace("movie_#{@movie.id}",
+                                        partial: "movies/movie_preference_actions",
+                                        locals: {
+                                          movie: @movie,
+                                          like_count: @movie.likes.count,
+                                          hate_count: @movie.hates.count,
+                                          user_movie_preference: @user_movie_preference
+                                        }),
+                   turbo_stream.replace("flash", partial: "shared/notices")
+                 ]
+        end
+      end
     else
-      redirect_to movies_path, alert: @user_movie_preference.errors.full_messages.join("<br>").html_safe
+      respond_to do |format|
+        format.html { redirect_to movies_path, alert: @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+        format.turbo_stream { flash.now[:alert] = @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+      end
     end
   end
 
   def update
     if @user_movie_preference.update(action: @action)
-      redirect_to movies_path, notice: "Your vote has changed!"
+      respond_to do |format|
+        format.html { redirect_to movies_path, notice: "Your vote has changed!" }
+        format.turbo_stream do
+          flash.now[:notice] = "Thanks for voting!"
+          render turbo_stream: [
+                   turbo_stream.replace("movie_#{@movie.id}",
+                                        partial: "movies/movie_preference_actions",
+                                        locals: {
+                                          movie: @movie,
+                                          like_count: @movie.likes.count,
+                                          hate_count: @movie.hates.count,
+                                          user_movie_preference: @user_movie_preference
+                                        }),
+                   turbo_stream.replace("flash", partial: "shared/notices")
+                 ]
+        end
+      end
     else
-      redirect_to edit_movie_path, alert: @movie.errors.full_messages.join("<br>").html_safe
+      respond_to do |format|
+        format.html { redirect_to movies_path, alert: @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+        format.turbo_stream { flash.now[:alert] = @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+      end
     end
   end
 
   def destroy
     @user_movie_preference.destroy
-    redirect_to movies_path, notice: "You removed your vote!"
+    respond_to do |format|
+      format.html { redirect_to movies_path, notice: "You removed your vote!" }
+      format.turbo_stream do
+        flash.now[:notice] = "You removed your vote!"
+        render turbo_stream: [
+                 turbo_stream.replace("movie_#{@movie.id}",
+                                      partial: "movies/movie_preference_actions",
+                                      locals: {
+                                        movie: @movie,
+                                        like_count: @movie.likes.count,
+                                        hate_count: @movie.hates.count,
+                                        user_movie_preference: nil
+                                      }),
+                 turbo_stream.replace("flash", partial: "shared/notices")
+               ]
+      end
+    end
   end
 
   private
