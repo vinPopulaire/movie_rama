@@ -4,15 +4,15 @@
       Sort By:
     </li>
     <li class="d-inline">
-      <%= link_to "Likes", movies_path(sort_by: 'likes') %>
+      <%= link_to "Likes", movies_path(@params.merge(sort_by: 'likes')) %>
     </li>
     <li class="d-inline"> | </li>
     <li class="d-inline">
-      <%= link_to "Hates", movies_path(sort_by: 'hates') %>
+      <%= link_to "Hates", movies_path(@params.merge(sort_by: 'hates')) %>
     </li>
     <li class="d-inline"> | </li>
     <li class="d-inline">
-      <%= link_to "Date", movies_path(sort_by: 'date') %>
+      <%= link_to "Date", movies_path(@params.merge(sort_by: 'date')) %>
     </li>
   </ul>
 </div>

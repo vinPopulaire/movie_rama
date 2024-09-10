@@ -2,6 +2,7 @@ class MoviesController < ApplicationController
   before_action :authenticate_user!, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :set_movie, only: [ :edit, :update, :destroy ]
   before_action :set_user, only: [ :index ]
+  before_action :permit_params
 
   def index
     @movies = @user.present? ? @user.movies : Movie.all
@@ -70,5 +71,9 @@ class MoviesController < ApplicationController
     @user = User.find_by(id: params[:user_id])
 
     redirect_to movies_path, notice: "User not found" unless @user.present?
+  end
+
+  def permit_params
+    @params = params.permit(:sort_by, :user_id)
   end
 end

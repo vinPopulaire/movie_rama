@@ -11,5 +11,5 @@
 
   <%= render @movies %>
 
-  <%= will_paginate @movies, list_classes: %w(pagination justify-content-end) %>
+  <%= will_paginate @movies, params: @params, list_classes: %w(pagination justify-content-end) %>
 </main>
