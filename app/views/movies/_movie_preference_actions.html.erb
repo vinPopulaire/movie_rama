@@ -1,13 +1,27 @@
 <% if user_signed_in? && movie.user != current_user %>
-  <ul class="align-middle list-unstyled p-3 m-0">
-    <li class="d-inline">
-      <%= relevant_preferences_like_link(movie, @user_movie_preferences) %>
-    </li>
-    <li class="d-inline"> | </li>
-    <li class="d-inline">
-      <%= relevant_preferences_hate_link(movie, @user_movie_preferences) %>
-    </li>
-  </ul>
+  <% if (movie.like_count + movie.hate_count) == 0 %>
+    <ul class="align-middle list-unstyled p-3 m-0">
+      <li class="d-inline">
+        Be the first to vote for this movie:
+      </li>
+      <li class="d-inline">
+        <%= relevant_preferences_link(movie, @user_movie_preferences, 'Like', :like) %>
+      </li>
+      <li class="d-inline"> | </li>
+      <li class="d-inline">
+        <%= relevant_preferences_link(movie, @user_movie_preferences, 'Hate', :hate) %>
+      </li>
+  <% else %>
+    <ul class="align-middle list-unstyled p-3 m-0">
+      <li class="d-inline">
+        <%= relevant_preferences_link(movie, @user_movie_preferences, movie.like_count.to_s + " likes", :like) %>
+      </li>
+      <li class="d-inline"> | </li>
+      <li class="d-inline">
+        <%= relevant_preferences_link(movie, @user_movie_preferences, movie.hate_count.to_s + " hates", :hate) %>
+      </li>
+    </ul>
+  <% end %>
 <% else %>
   <ul class="align-middle list-unstyled p-3 m-0">
     <li class="d-inline">
