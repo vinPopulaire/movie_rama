@@ -19,13 +19,4 @@ class Movie < ApplicationRecord
       group("movies.id").
       order("COUNT(user_movie_preferences.id) DESC")
   end
-
-  # TODO: Fix needed, this will not perform well with many likes and dislikes because if will fetch all likes into memory
-  def like_count
-    likes.length
-  end
-
-  def hate_count
-    hates.length
-  end
 end
