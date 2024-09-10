@@ -8,8 +8,10 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-USERS_NUM = 10
-MOVIES_NUM = 30
+USERS_NUM = 100
+MOVIES_NUM = 300
+
+puts "Creating users"
 
 USERS_NUM.times do
   User.create!(
@@ -19,7 +21,11 @@ USERS_NUM.times do
     password: "12341234")
 end
 
+puts "#{User.count} users created"
+
 users = User.all.to_a
+
+puts "Creating movies"
 
 MOVIES_NUM.times do |n|
   Movie.create!(
@@ -30,10 +36,14 @@ MOVIES_NUM.times do |n|
   )
 end
 
+puts "#{Movie.count} movies created"
+
 movies = Movie.all.to_a
 
+puts "Creating votes"
+
 users.each do |user|
-  movies_to_vote = movies.sample(rand(10..20)).pluck(:id)
+  movies_to_vote = movies.sample(rand(10..60)).pluck(:id)
 
   movies_to_vote.each do |movie_id|
     UserMoviePreference.create!(
@@ -43,3 +53,5 @@ users.each do |user|
     )
   end
 end
+
+puts "#{UserMoviePreference.count} votes created"
