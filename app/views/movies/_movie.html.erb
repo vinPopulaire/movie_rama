@@ -1,7 +1,25 @@
 <div class="movie border border-dark rounded p-3 my-3">
-  <h2>
-    <%= movie.title %>
-  </h2>
+  <div class="d-flex">
+    <div class="me-auto">
+      <h2>
+        <%= movie.title %>
+      </h2>
+    </div>
+    <% if user_signed_in? && movie.user == current_user %>
+      <div>
+        <ul class="list-unstyled m-0">
+          <li class="d-inline">
+            <%= link_to 'Delete', movie_path(movie),
+              data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
+          </li>
+          <li class="d-inline">
+            <%= link_to "Edit", edit_movie_path(movie) %>
+          </li>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+
   <div class="py-2">
     Posted by
     <%= link_to movie.user.fullname,
@@ -11,17 +29,6 @@
   <div>
     <%= movie.description %>
   </div>
-  <% if user_signed_in? && movie.user == current_user %>
-    <ul class="align-middle list-unstyled p-3 m-0">
-      <li class="d-inline">
-        <%= link_to 'Delete', movie_path(movie),
-          data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
-      </li>
-      <li class="d-inline">
-        <%= link_to "Edit", edit_movie_path(movie) %>
-      </li>
-    </ul>
-  <% end %>
 
   <%= render 'movie_preference_actions', movie: movie %>
 </div>
