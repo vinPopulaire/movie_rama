@@ -23,7 +23,7 @@
   <div class="py-2">
     Posted by
     <%= link_to movie.user.fullname,
-                movies_path(filter: 'user', user_id: movie.user.id) %>
+                movies_path(user_id: movie.user.id) %>
     <%= time_ago(movie.created_at) %>
   </div>
   <div>

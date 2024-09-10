@@ -1,24 +1,19 @@
 class MoviesController < ApplicationController
   before_action :authenticate_user!, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :set_movie, only: [ :edit, :update, :destroy ]
+  before_action :set_user, only: [ :index ]
 
   def index
-    if params[:filter] == "date"
-      @movies = Movie.order(created_at: :desc)
-    elsif params[:filter] == "likes"
-      @movies = Movie.order_by_likes
-    elsif params[:filter] == "hates"
-      @movies = Movie.order_by_hates
-    elsif params[:filter] == "user"
-      user = User.find_by(id: params[:user_id])
+    @movies = @user.present? ? @user.movies : Movie.all
 
-      if user.present?
-        @movies = user.movies
-      else
-        redirect_to movies_path, notice: "User not found"
-      end
+    if params[:sort_by] == "date"
+      @movies = @movies.order(created_at: :desc)
+    elsif params[:sort_by] == "likes"
+      @movies = @movies.order_by_likes
+    elsif params[:sort_by] == "hates"
+      @movies = @movies.order_by_hates
     else
-      @movies = Movie.order(id: :desc)
+      @movies = @movies.order(id: :desc)
     end
 
     @movies = @movies.includes(:user, :hates, :likes).
@@ -67,5 +62,13 @@ class MoviesController < ApplicationController
 
   def movie_params
     params.require(:movie).permit([ :title, :description ])
+  end
+
+  def set_user
+    return unless params[:user_id]
+
+    @user = User.find_by(id: params[:user_id])
+
+    redirect_to movies_path, notice: "User not found" unless @user.present?
   end
 end

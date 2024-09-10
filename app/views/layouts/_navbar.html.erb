@@ -11,7 +11,7 @@
         <% if user_signed_in? %>
           <li class="nav-item">
             <span class="nav-link">
-              Hi <%= link_to current_user.fullname, movies_path(filter: 'user', user_id: current_user.id) %>
+              Hi <%= link_to current_user.fullname, movies_path(user_id: current_user.id) %>
             </span>
           </li>
           <li class="nav-item">

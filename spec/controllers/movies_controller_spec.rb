@@ -26,10 +26,11 @@ RSpec.describe MoviesController, type: :controller do
   end
 
   describe 'GET index' do
-    let(:movie) { FactoryBot.create(:movie) }
-    let(:movie2) { FactoryBot.create(:movie) }
+    let(:movie_neutral) { FactoryBot.create(:movie) }
+    let(:movie_liked) { FactoryBot.create(:movie) }
+    let(:movie_hated) { FactoryBot.create(:movie) }
+
     let(:user) { FactoryBot.create(:user) }
-    let!(:preference) { FactoryBot.create(:user_movie_preference, :like, movie: movie, user: user) }
 
     it 'returns a successful response' do
       get :index
@@ -38,20 +39,24 @@ RSpec.describe MoviesController, type: :controller do
 
     it 'assigns @movies' do
       get :index
-      expect(assigns(:movies)).to match_array([ movie, movie2 ])
+      expect(assigns(:movies)).to match_array([ movie_neutral, movie_liked, movie_hated ])
     end
 
     it 'does not assign @user_movie_preferences' do
+      FactoryBot.create(:user_movie_preference, :like, movie: movie_liked, user: user)
+
       get :index
       expect(assigns(:user_movie_preferences)).to be_nil
     end
 
     context 'when the user is logged in' do
+      let!(:preference) { FactoryBot.create(:user_movie_preference, :like, movie: movie_liked, user: user) }
+
       before { sign_in user }
 
       it 'assigns @user_movie_preferences' do
         get :index
-        expect(assigns(:user_movie_preferences)).to eq({ movie.id => preference })
+        expect(assigns(:user_movie_preferences)).to eq({ movie_liked.id => preference })
       end
     end
 
@@ -61,26 +66,74 @@ RSpec.describe MoviesController, type: :controller do
       expect(response).to render_template('index')
     end
 
-    context 'when a date filtering is chosen' do
-      let!(:movie) { FactoryBot.create(:movie, created_at: 2.month.ago) }
-      let!(:movie2) { FactoryBot.create(:movie, created_at: 1.month.ago) }
+    context 'when a date sorting is chosen' do
+      let(:movie_neutral) { FactoryBot.create(:movie, created_at: 2.months.ago) }
+      let(:movie_liked) { FactoryBot.create(:movie, created_at: 4.month.ago) }
+      let(:movie_hated) { FactoryBot.create(:movie, created_at: 3.months.ago) }
 
       it 'assigns @movies with the correct ordering' do
-        get :index, params: { filter: 'date' }
-        expect(assigns(:movies)).to eq([ movie2, movie ])
+        get :index, params: { sort_by: 'date' }
+        expect(assigns(:movies)).to eq([ movie_neutral, movie_hated, movie_liked ])
       end
     end
 
-    context 'when a user filters is chosen' do
+    context 'when a likes sorting is chosen' do
+      before do
+        FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
+        FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
+        FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
+        FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+      end
+
+      it 'assigns @movies with the correct ordering' do
+        get :index, params: { sort_by: 'likes' }
+        expect(assigns(:movies).to_a).to eq([ movie_liked, movie_neutral, movie_hated ])
+      end
+    end
+
+    context 'when a hates sorting is chosen' do
+      let(:movie_neutral) { FactoryBot.create(:movie) }
+      let(:movie_liked) { FactoryBot.create(:movie) }
+      let(:movie_hated) { FactoryBot.create(:movie) }
+
+      before do
+        FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
+        FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
+        FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
+        FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+      end
+
+      it 'assigns @movies with the correct ordering' do
+        get :index, params: { sort_by: 'hates' }
+        expect(assigns(:movies).to_a).to eq([ movie_hated, movie_neutral, movie_liked ])
+      end
+    end
+
+    context 'when a user filtering is chosen' do
       let(:user1) { FactoryBot.create(:user) }
       let(:user2) { FactoryBot.create(:user) }
 
-      let!(:movie1) { FactoryBot.create(:movie, user: user1) }
-      let!(:movie2) { FactoryBot.create(:movie, user: user2) }
+      let(:movie_neutral) { FactoryBot.create(:movie, user: user1) }
+      let(:movie_liked) { FactoryBot.create(:movie, user: user1) }
+      let(:movie_hated) { FactoryBot.create(:movie, user: user2) }
 
       it 'assigns @movies only of the correct user' do
-        get :index, params: { filter: 'user', user_id: user1.id }
-        expect(assigns(:movies)).to eq([ movie1 ])
+        get :index, params: { user_id: user1.id }
+        expect(assigns(:movies)).to match_array([ movie_neutral, movie_liked ])
+      end
+
+      context 'and a likes sorting is chosen' do
+        before do
+          FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
+          FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
+          FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
+          FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+        end
+
+        it 'assigns @movies with the correct ordering' do
+          get :index, params: { sort_by: 'likes', user_id: user1.id }
+          expect(assigns(:movies).to_a).to eq([ movie_liked, movie_neutral ])
+        end
       end
     end
 
