@@ -45,15 +45,15 @@ class MoviesController < ApplicationController
 
   def update
     if @movie.update(movie_params)
-      redirect_to movies_path, notice: "Movie was successfully updated."
+      redirect_to movies_path(@params.merge(page: params[:page])), notice: "Movie was successfully updated."
     else
-      redirect_to edit_movie_path, alert: @movie.errors.full_messages.join("<br>").html_safe
+      redirect_to edit_movie_path(@movie, @params.merge(page: params[:page])), alert: @movie.errors.full_messages.join("<br>").html_safe
     end
   end
 
   def destroy
     @movie.destroy
-    redirect_to movies_path, notice: "Movie was successfully destroyed."
+    redirect_to movies_path(@params.merge(page: params[:page])), notice: "Movie was successfully destroyed."
   end
 
   private

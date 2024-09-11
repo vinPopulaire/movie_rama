@@ -1,5 +1,5 @@
 <main class="container">
-  <%= link_to sanitize("&larr; Back to movies"), movies_path %>
+  <%= link_to sanitize("&larr; Back to movies"), movies_path(@params.merge(page: params[:page])) %>
   <div class="row justify-content-center">
     <div class="col-6">
 

@@ -13,11 +13,11 @@
       <div>
         <ul class="list-unstyled m-0">
           <li class="d-inline">
-            <%= link_to 'Delete', movie_path(movie),
+            <%= link_to 'Delete', movie_path(movie, @params.merge(page: params[:page])),
               data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
           </li>
           <li class="d-inline">
-            <%= link_to "Edit", edit_movie_path(movie) %>
+            <%= link_to "Edit", edit_movie_path(movie, @params.merge(page: params[:page])) %>
           </li>
         </ul>
       </div>
