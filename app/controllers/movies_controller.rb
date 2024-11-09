@@ -17,8 +17,7 @@ class MoviesController < ApplicationController
       @movies = @movies.order(id: :desc)
     end
 
-    @movies = @movies.includes(:user, :hates, :likes).
-                      paginate(page: params[:page], per_page: 10)
+    @movies = @movies.includes(:user).paginate(page: params[:page], per_page: 10)
 
     @votes = current_user&.votes&.where(movie: @movies)&.index_by(&:movie_id)
 
