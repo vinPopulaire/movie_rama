@@ -46,7 +46,7 @@ users.each do |user|
   movies_to_vote = movies.sample(rand(10..60)).pluck(:id)
 
   movies_to_vote.each do |movie_id|
-    UserMoviePreference.create!(
+    Vote.create!(
       movie_id: movie_id,
       user_id: user.id,
       action: rand(2)
@@ -54,4 +54,4 @@ users.each do |user|
   end
 end
 
-puts "#{UserMoviePreference.count} votes created"
+puts "#{Vote.count} votes created"

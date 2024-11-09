@@ -1,14 +1,14 @@
-class UserMoviePreferencesController < ApplicationController
+class VotesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_action, only: [ :create, :update ]
   before_action :set_movie, only: [ :create, :update, :destroy ]
   before_action :check_user_is_not_uploader
-  before_action :set_user_movie_preference, only: [ :update, :destroy ]
+  before_action :set_vote, only: [ :update, :destroy ]
 
   def create
-    @user_movie_preference = UserMoviePreference.new(user: current_user, movie: @movie, action: @action)
+    @vote = Vote.new(user: current_user, movie: @movie, action: @action)
 
-    if @user_movie_preference.save
+    if @vote.save
       respond_to do |format|
         format.html { redirect_to movies_path, notice: "Thanks for voting!" }
         format.turbo_stream do
@@ -20,7 +20,7 @@ class UserMoviePreferencesController < ApplicationController
                                           movie: @movie,
                                           like_count: @movie.likes.count,
                                           hate_count: @movie.hates.count,
-                                          user_movie_preference: @user_movie_preference
+                                          vote: @vote
                                         }),
                    turbo_stream.replace("flash", partial: "shared/notices")
                  ]
@@ -28,14 +28,14 @@ class UserMoviePreferencesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to movies_path, alert: @user_movie_preference.errors.full_messages.join("<br>").html_safe }
-        format.turbo_stream { flash.now[:alert] = @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+        format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
+        format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
       end
     end
   end
 
   def update
-    if @user_movie_preference.update(action: @action)
+    if @vote.update(action: @action)
       respond_to do |format|
         format.html { redirect_to movies_path, notice: "Your vote has changed!" }
         format.turbo_stream do
@@ -47,7 +47,7 @@ class UserMoviePreferencesController < ApplicationController
                                           movie: @movie,
                                           like_count: @movie.likes.count,
                                           hate_count: @movie.hates.count,
-                                          user_movie_preference: @user_movie_preference
+                                          vote: @vote
                                         }),
                    turbo_stream.replace("flash", partial: "shared/notices")
                  ]
@@ -55,14 +55,14 @@ class UserMoviePreferencesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to movies_path, alert: @user_movie_preference.errors.full_messages.join("<br>").html_safe }
-        format.turbo_stream { flash.now[:alert] = @user_movie_preference.errors.full_messages.join("<br>").html_safe }
+        format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
+        format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
       end
     end
   end
 
   def destroy
-    @user_movie_preference.destroy
+    @vote.destroy
     respond_to do |format|
       format.html { redirect_to movies_path, notice: "You removed your vote!" }
       format.turbo_stream do
@@ -74,7 +74,7 @@ class UserMoviePreferencesController < ApplicationController
                                         movie: @movie,
                                         like_count: @movie.likes.count,
                                         hate_count: @movie.hates.count,
-                                        user_movie_preference: nil
+                                        vote: nil
                                       }),
                  turbo_stream.replace("flash", partial: "shared/notices")
                ]
@@ -87,7 +87,7 @@ class UserMoviePreferencesController < ApplicationController
   def set_action
     @action = params[:user_action]&.to_sym
 
-    redirect_to movies_path, alert: "No such action exists" unless UserMoviePreference.actions.include?(@action)
+    redirect_to movies_path, alert: "No such action exists" unless Vote.actions.include?(@action)
   end
 
   def set_movie
@@ -96,10 +96,10 @@ class UserMoviePreferencesController < ApplicationController
     redirect_to movies_path, alert: "No such movie exists" unless @movie.present?
   end
 
-  def set_user_movie_preference
-    @user_movie_preference = UserMoviePreference.find_by(id: params[:id], user: current_user)
+  def set_vote
+    @vote = Vote.find_by(id: params[:id], user: current_user)
 
-    redirect_to movies_path, alert: "You have not voted the movie yet" unless @user_movie_preference.present?
+    redirect_to movies_path, alert: "You have not voted the movie yet" unless @vote.present?
   end
 
   def check_user_is_not_uploader

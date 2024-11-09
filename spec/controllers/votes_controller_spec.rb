@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UserMoviePreferencesController, type: :controller do
+RSpec.describe VotesController, type: :controller do
   shared_context 'actions without permission' do
     context 'when user is authenticated but is the owner of the movie' do
       before { sign_in user }
@@ -42,11 +42,11 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
       before { sign_in user }
 
       context 'with valid parameters' do
-        it 'creates a new user_movie_preference and assigns it to @user_movie_preference' do
-          expect { subject }.to change(UserMoviePreference, :count).by(1)
+        it 'creates a new vote and assigns it to @vote' do
+          expect { subject }.to change(Vote, :count).by(1)
 
-          expect(assigns(:user_movie_preference)).to be_a(UserMoviePreference)
-          expect(assigns(:user_movie_preference)).to be_persisted
+          expect(assigns(:vote)).to be_a(Vote)
+          expect(assigns(:vote)).to be_persisted
         end
 
         it 'redirects to the movies index with a success notice' do
@@ -59,8 +59,8 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
       context 'with invalid attributes' do
         let(:action) { :foo }
 
-        it 'does not create a new user_movie_preference' do
-          expect { subject }.to_not change(UserMoviePreference, :count)
+        it 'does not create a new vote' do
+          expect { subject }.to_not change(Vote, :count)
         end
 
         it 'renders the new template with an error flash' do
@@ -77,12 +77,12 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
   describe 'PATCH update' do
     let(:user) { FactoryBot.create(:user) }
     let(:movie) { FactoryBot.create(:movie) }
-    let!(:user_movie_preference) { FactoryBot.create(:user_movie_preference, movie: movie, action: :hate) }
+    let!(:vote) { FactoryBot.create(:vote, movie: movie, action: :hate) }
     let(:action) { :like }
 
     let(:parameters) do
       {
-        id: user_movie_preference.id,
+        id: vote.id,
         movie_id: movie.id,
         user_action: action
       }
@@ -94,13 +94,13 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
       before { sign_in user }
 
       context 'with valid attributes' do
-        let!(:user_movie_preference) { FactoryBot.create(:user_movie_preference, movie: movie, user: user, action: :hate) }
+        let!(:vote) { FactoryBot.create(:vote, movie: movie, user: user, action: :hate) }
 
         it 'updates the preference and redirects to the movies index with a success notice' do
           subject
 
-          user_movie_preference.reload
-          expect(user_movie_preference.action).to eq("like")
+          vote.reload
+          expect(vote.action).to eq("like")
           expect(response).to redirect_to(movies_path)
           expect(flash[:notice]).to eq('Your vote has changed!')
         end
@@ -111,8 +111,8 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
           it 'does not update the preference and redirects to the movies index with a success notice' do
             subject
 
-            user_movie_preference.reload
-            expect(user_movie_preference.action).to eq("hate")
+            vote.reload
+            expect(vote.action).to eq("hate")
             expect(response).to redirect_to(movies_path)
             expect(flash[:alert]).to eq('You cannot vote your own movie')
           end
@@ -125,8 +125,8 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
         it 'does not update the preference and redirects to the movies index' do
           subject
 
-          user_movie_preference.reload
-          expect(user_movie_preference.action).not_to eq(:foo)
+          vote.reload
+          expect(vote.action).not_to eq(:foo)
           expect(response).to redirect_to(movies_path)
         end
       end
@@ -138,15 +138,15 @@ RSpec.describe UserMoviePreferencesController, type: :controller do
   describe 'DELETE destroy' do
     let(:user) { FactoryBot.create(:user) }
     let(:movie) { FactoryBot.create(:movie) }
-    let!(:user_movie_preference) { FactoryBot.create(:user_movie_preference, user: user, movie: movie) }
+    let!(:vote) { FactoryBot.create(:vote, user: user, movie: movie) }
 
-    subject { delete :destroy, params: { id: user_movie_preference.id, movie_id: movie.id } }
+    subject { delete :destroy, params: { id: vote.id, movie_id: movie.id } }
 
     context 'when user is authenticated' do
       before { sign_in user }
 
-      it 'deletes the user_movie_preference and redirects to the movies index with a success notice' do
-        expect { subject }.to change(UserMoviePreference, :count).by(-1)
+      it 'deletes the vote and redirects to the movies index with a success notice' do
+        expect { subject }.to change(Vote, :count).by(-1)
 
         expect(response).to redirect_to(movies_path)
         expect(flash[:notice]).to eq('You removed your vote!')

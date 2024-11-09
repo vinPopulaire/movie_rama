@@ -42,11 +42,11 @@ RSpec.describe MoviesController, type: :controller do
       expect(assigns(:movies)).to match_array([ movie_neutral, movie_liked, movie_hated ])
     end
 
-    it 'does not assign @user_movie_preferences' do
-      FactoryBot.create(:user_movie_preference, :like, movie: movie_liked, user: user)
+    it 'does not assign @votes' do
+      FactoryBot.create(:vote, :like, movie: movie_liked, user: user)
 
       get :index
-      expect(assigns(:user_movie_preferences)).to be_nil
+      expect(assigns(:votes)).to be_nil
     end
 
     it 'assigns @like_count and @hate_count to be empty' do
@@ -55,12 +55,12 @@ RSpec.describe MoviesController, type: :controller do
       expect(assigns(:hate_count)).to be_empty
     end
 
-    context 'when user movie preferences exist' do
+    context 'when votes exist' do
       before do
-        FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
+        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
       end
 
       it 'assigns @like_count and @hate_count with the correct values' do
@@ -71,13 +71,13 @@ RSpec.describe MoviesController, type: :controller do
     end
 
     context 'when the user is logged in' do
-      let!(:preference) { FactoryBot.create(:user_movie_preference, :like, movie: movie_liked, user: user) }
+      let!(:preference) { FactoryBot.create(:vote, :like, movie: movie_liked, user: user) }
 
       before { sign_in user }
 
-      it 'assigns @user_movie_preferences' do
+      it 'assigns @votes' do
         get :index
-        expect(assigns(:user_movie_preferences)).to eq({ movie_liked.id => preference })
+        expect(assigns(:votes)).to eq({ movie_liked.id => preference })
       end
     end
 
@@ -100,10 +100,10 @@ RSpec.describe MoviesController, type: :controller do
 
     context 'when a likes sorting is chosen' do
       before do
-        FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
+        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
       end
 
       it 'assigns @movies with the correct ordering' do
@@ -118,10 +118,10 @@ RSpec.describe MoviesController, type: :controller do
       let(:movie_hated) { FactoryBot.create(:movie) }
 
       before do
-        FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
+        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
+        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
       end
 
       it 'assigns @movies with the correct ordering' do
@@ -145,10 +145,10 @@ RSpec.describe MoviesController, type: :controller do
 
       context 'and a likes sorting is chosen' do
         before do
-          FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
-          FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_neutral)
-          FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_neutral)
-          FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+          FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
+          FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
+          FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
+          FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
         end
 
         it 'assigns @movies with the correct ordering' do

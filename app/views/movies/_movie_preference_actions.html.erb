@@ -8,21 +8,21 @@
               Be the first to vote for this movie:
             </li>
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, user_movie_preference, 'Like', :like) %>
+              <%= relevant_preferences_link(movie, vote, 'Like', :like) %>
             </li>
             <li class="d-inline"> | </li>
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, user_movie_preference, 'Hate', :hate) %>
+              <%= relevant_preferences_link(movie, vote, 'Hate', :hate) %>
             </li>
           </ul>
         <% else %>
           <ul class="list-unstyled p-3 m-0">
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, user_movie_preference, like_count.to_s + " likes", :like) %>
+              <%= relevant_preferences_link(movie, vote, like_count.to_s + " likes", :like) %>
             </li>
             <li class="d-inline"> | </li>
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, user_movie_preference, hate_count.to_s + " hates", :hate) %>
+              <%= relevant_preferences_link(movie, vote, hate_count.to_s + " hates", :hate) %>
             </li>
           </ul>
         <% end %>
@@ -39,15 +39,15 @@
       <% end %>
     </div>
 
-    <% if user_movie_preference.present? %>
+    <% if vote.present? %>
       <div>
         <ul class="list-unstyled p-3 m-0">
           <li class="d-inline">
-            You <%= user_movie_preference.action %> this movie
+            You <%= vote.action %> this movie
           </li>
           <li class="d-inline"> | </li>
           <li class="d-inline">
-            <%= link_to "Un#{user_movie_preference.action}", user_movie_preference_path(id: user_movie_preference.id, movie_id: movie.id),
+            <%= link_to "Un#{vote.action}", vote_path(id: vote.id, movie_id: movie.id),
                 data: { turbo_method: :delete } %>
           </li>
         </ul>

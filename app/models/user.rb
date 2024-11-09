@@ -5,7 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :movies, dependent: :destroy
-  has_many :user_movie_preferences, dependent: :destroy
+  has_many :votes, dependent: :destroy
 
   validates :name, presence: true
   validates :surname, presence: true

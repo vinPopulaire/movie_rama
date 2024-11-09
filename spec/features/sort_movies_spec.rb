@@ -6,8 +6,8 @@ RSpec.describe 'Users should be able to sort with number of likes/hates/date', t
 
     movie_liked = FactoryBot.create(:movie, title: 'Title1')
     movie_hated = FactoryBot.create(:movie, title: 'Title2')
-    FactoryBot.create_list(:user_movie_preference, 2, :like, movie: movie_liked)
-    FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_hated)
+    FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
+    FactoryBot.create_list(:vote, 1, :like, movie: movie_hated)
 
     click_on "Likes"
 
@@ -20,8 +20,8 @@ RSpec.describe 'Users should be able to sort with number of likes/hates/date', t
 
     movie_liked = FactoryBot.create(:movie, title: 'Title1')
     movie_hated = FactoryBot.create(:movie, title: 'Title2')
-    FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_liked)
-    FactoryBot.create_list(:user_movie_preference, 2, :hate, movie: movie_hated)
+    FactoryBot.create_list(:vote, 1, :hate, movie: movie_liked)
+    FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
 
     click_on "Hates"
 

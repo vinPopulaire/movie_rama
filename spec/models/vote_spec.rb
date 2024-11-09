@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UserMoviePreference, type: :model do
+RSpec.describe Vote, type: :model do
   it { should belong_to(:user) }
   it { should belong_to(:movie) }
 
@@ -9,7 +9,7 @@ RSpec.describe UserMoviePreference, type: :model do
   it { is_expected.to validate_presence_of :action }
 
   it 'validates uniqueness of movie scoped to user' do
-    FactoryBot.create(:user_movie_preference)
+    FactoryBot.create(:vote)
 
     is_expected.to validate_uniqueness_of(:movie).scoped_to(:user_id)
   end

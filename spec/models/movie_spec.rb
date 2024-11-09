@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Movie, type: :model do
   it { should belong_to(:user) }
-  it { should have_many(:user_movie_preferences).dependent(:destroy) }
+  it { should have_many(:votes).dependent(:destroy) }
   it { should have_many(:likes) }
   it { should have_many(:hates) }
 
@@ -12,8 +12,8 @@ RSpec.describe Movie, type: :model do
 
   describe 'associations' do
     let(:movie) { FactoryBot.create(:movie) }
-    let!(:like) { FactoryBot.create(:user_movie_preference, :like, movie: movie) }
-    let!(:hate) { FactoryBot.create(:user_movie_preference, :hate, movie: movie) }
+    let!(:like) { FactoryBot.create(:vote, :like, movie: movie) }
+    let!(:hate) { FactoryBot.create(:vote, :hate, movie: movie) }
 
     describe '.likes' do
       subject { movie.likes }
@@ -42,12 +42,12 @@ RSpec.describe Movie, type: :model do
     subject { Movie.order_by_likes }
 
     before do
-      FactoryBot.create_list(:user_movie_preference, 5, :like, movie: movie_liked)
-      FactoryBot.create_list(:user_movie_preference, 3, :like, movie: movie_neutral)
-      FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_hated)
-      FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_liked)
-      FactoryBot.create_list(:user_movie_preference, 3, :hate, movie: movie_neutral)
-      FactoryBot.create_list(:user_movie_preference, 5, :hate, movie: movie_hated)
+      FactoryBot.create_list(:vote, 5, :like, movie: movie_liked)
+      FactoryBot.create_list(:vote, 3, :like, movie: movie_neutral)
+      FactoryBot.create_list(:vote, 1, :like, movie: movie_hated)
+      FactoryBot.create_list(:vote, 1, :hate, movie: movie_liked)
+      FactoryBot.create_list(:vote, 3, :hate, movie: movie_neutral)
+      FactoryBot.create_list(:vote, 5, :hate, movie: movie_hated)
     end
 
     it 'returns the movies with the correct ordering' do
@@ -63,12 +63,12 @@ RSpec.describe Movie, type: :model do
     subject { Movie.order_by_hates }
 
     before do
-      FactoryBot.create_list(:user_movie_preference, 5, :like, movie: movie_liked)
-      FactoryBot.create_list(:user_movie_preference, 3, :like, movie: movie_neutral)
-      FactoryBot.create_list(:user_movie_preference, 1, :like, movie: movie_hated)
-      FactoryBot.create_list(:user_movie_preference, 1, :hate, movie: movie_liked)
-      FactoryBot.create_list(:user_movie_preference, 3, :hate, movie: movie_neutral)
-      FactoryBot.create_list(:user_movie_preference, 5, :hate, movie: movie_hated)
+      FactoryBot.create_list(:vote, 5, :like, movie: movie_liked)
+      FactoryBot.create_list(:vote, 3, :like, movie: movie_neutral)
+      FactoryBot.create_list(:vote, 1, :like, movie: movie_hated)
+      FactoryBot.create_list(:vote, 1, :hate, movie: movie_liked)
+      FactoryBot.create_list(:vote, 3, :hate, movie: movie_neutral)
+      FactoryBot.create_list(:vote, 5, :hate, movie: movie_hated)
     end
 
     it 'returns the movies with the correct ordering' do

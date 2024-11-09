@@ -20,10 +20,10 @@ class MoviesController < ApplicationController
     @movies = @movies.includes(:user, :hates, :likes).
                       paginate(page: params[:page], per_page: 10)
 
-    @user_movie_preferences = current_user&.user_movie_preferences&.where(movie: @movies)&.index_by(&:movie_id)
+    @votes = current_user&.votes&.where(movie: @movies)&.index_by(&:movie_id)
 
-    @like_count = UserMoviePreference.where(movie: @movies, action: :like).group(:movie_id).count
-    @hate_count = UserMoviePreference.where(movie: @movies, action: :hate).group(:movie_id).count
+    @like_count = Vote.where(movie: @movies, action: :like).group(:movie_id).count
+    @hate_count = Vote.where(movie: @movies, action: :hate).group(:movie_id).count
   end
 
   def new
