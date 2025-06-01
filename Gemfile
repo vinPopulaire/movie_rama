@@ -37,6 +37,8 @@ gem "prosopite"
 
 gem "pg_query"
 
+gem "pg_search"
+
 gem "will_paginate"
 gem 'will_paginate-bootstrap-style'
 

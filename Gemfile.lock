@@ -199,6 +199,9 @@ GEM
     pg (1.5.9)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)
+    pg_search (2.3.7)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -381,6 +384,7 @@ DEPENDENCIES
   jbuilder
   pg (~> 1.1)
   pg_query
+  pg_search
   prosopite
   puma (>= 5.0)
   rails (~> 7.2.1)
