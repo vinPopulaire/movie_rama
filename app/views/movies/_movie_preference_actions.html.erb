@@ -2,7 +2,7 @@
   <div class="d-flex">
     <div class="me-auto">
       <% if user_signed_in? && movie.user != current_user %>
-        <% if (like_count + hate_count) == 0 %>
+        <% if (movie.like_count + movie.hate_count) == 0 %>
           <ul class="list-unstyled p-3 m-0">
             <li class="d-inline">
               Be the first to vote for this movie:
@@ -18,22 +18,22 @@
         <% else %>
           <ul class="list-unstyled p-3 m-0">
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, vote, like_count.to_s + " likes", :like) %>
+              <%= relevant_preferences_link(movie, vote, movie.like_count.to_s + " likes", :like) %>
             </li>
             <li class="d-inline"> | </li>
             <li class="d-inline">
-              <%= relevant_preferences_link(movie, vote, hate_count.to_s + " hates", :hate) %>
+              <%= relevant_preferences_link(movie, vote, movie.hate_count.to_s + " hates", :hate) %>
             </li>
           </ul>
         <% end %>
       <% else %>
         <ul class="list-unstyled p-3 m-0">
           <li class="d-inline">
-            <%= like_count.to_s + " likes" %>
+            <%= movie.like_count.to_s + " likes" %>
           </li>
           <li class="d-inline"> | </li>
           <li class="d-inline">
-            <%= hate_count.to_s + " hates" %>
+            <%= movie.hate_count.to_s + " hates" %>
           </li>
         </ul>
       <% end %>

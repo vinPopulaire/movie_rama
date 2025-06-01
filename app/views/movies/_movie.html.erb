@@ -1,5 +1,3 @@
-<% like_count = @like_count[movie.id] || 0 %>
-<% hate_count = @hate_count[movie.id] || 0 %>
 <% vote = @votes&.dig(movie.id) %>
 
 <div class="movie border border-dark rounded p-3 my-3">
@@ -36,8 +34,6 @@
 
   <%= render 'movie_preference_actions',
              movie: movie,
-             like_count: like_count,
-             hate_count: hate_count,
              vote: vote %>
 
 </div>

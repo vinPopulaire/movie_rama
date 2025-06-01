@@ -49,27 +49,6 @@ RSpec.describe MoviesController, type: :controller do
       expect(assigns(:votes)).to be_nil
     end
 
-    it 'assigns @like_count and @hate_count to be empty' do
-      get :index
-      expect(assigns(:like_count)).to be_empty
-      expect(assigns(:hate_count)).to be_empty
-    end
-
-    context 'when votes exist' do
-      before do
-        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
-      end
-
-      it 'assigns @like_count and @hate_count with the correct values' do
-        get :index
-        expect(assigns(:like_count)).to eq({ movie_liked.id => 2, movie_neutral.id => 1 })
-        expect(assigns(:hate_count)).to eq({ movie_hated.id => 2, movie_neutral.id => 1 })
-      end
-    end
-
     context 'when the user is logged in' do
       let!(:preference) { FactoryBot.create(:vote, :like, movie: movie_liked, user: user) }
 

@@ -22,8 +22,6 @@ class VotesController < ApplicationController
                                           partial: "movies/movie_preference_actions",
                                           locals: {
                                             movie: @movie,
-                                            like_count: @movie.like_count,
-                                            hate_count: @movie.hate_count,
                                             vote: @vote
                                           }),
                     turbo_stream.replace("flash", partial: "shared/notices")
@@ -62,8 +60,6 @@ class VotesController < ApplicationController
                                           partial: "movies/movie_preference_actions",
                                           locals: {
                                             movie: @movie,
-                                            like_count: @movie.like_count,
-                                            hate_count: @movie.hate_count,
                                             vote: @vote
                                           }),
                     turbo_stream.replace("flash", partial: "shared/notices")
@@ -97,8 +93,6 @@ class VotesController < ApplicationController
                                           partial: "movies/movie_preference_actions",
                                           locals: {
                                             movie: @movie,
-                                            like_count: @movie.like_count,
-                                            hate_count: @movie.hate_count,
                                             vote: nil
                                           }),
                     turbo_stream.replace("flash", partial: "shared/notices")
