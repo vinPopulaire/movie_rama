@@ -66,6 +66,17 @@ RSpec.describe MoviesController, type: :controller do
       expect(response).to render_template('index')
     end
 
+    context 'when a search term is chosen' do
+      before do
+        movie_neutral.update!(title: "chosen one")
+      end
+
+      it 'assigns @movies with the correct ordering' do
+        get :index, params: { search: 'chosen' }
+        expect(assigns(:movies)).to eq([ movie_neutral ])
+      end
+    end
+
     context 'when a date sorting is chosen' do
       it 'assigns @movies with the correct ordering' do
         get :index, params: { sort_by: 'date' }

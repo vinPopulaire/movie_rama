@@ -7,6 +7,10 @@ class MoviesController < ApplicationController
   def index
     @movies = @user.present? ? @user.movies : Movie.all
 
+    if params[:search]
+      @movies = @movies.search_by_title(params[:search])
+    end
+
     if params[:sort_by] == "date"
       @movies = @movies.order(created_at: :desc)
     elsif params[:sort_by] == "likes"
@@ -73,6 +77,6 @@ class MoviesController < ApplicationController
   end
 
   def permit_params
-    @params = params.permit(:sort_by, :user_id)
+    @params = params.permit(:sort_by, :user_id, :search)
   end
 end
