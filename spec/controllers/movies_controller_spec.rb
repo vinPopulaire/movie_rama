@@ -26,9 +26,9 @@ RSpec.describe MoviesController, type: :controller do
   end
 
   describe 'GET index' do
-    let(:movie_neutral) { FactoryBot.create(:movie) }
-    let(:movie_liked) { FactoryBot.create(:movie) }
-    let(:movie_hated) { FactoryBot.create(:movie) }
+    let!(:movie_neutral) { FactoryBot.create(:movie, like_count: 5, hate_count: 5, created_at: 2.months.ago) }
+    let!(:movie_liked) { FactoryBot.create(:movie, like_count: 10, hate_count: 0, created_at: 4.month.ago) }
+    let!(:movie_hated) { FactoryBot.create(:movie, like_count: 0, hate_count: 10, created_at: 3.months.ago) }
 
     let(:user) { FactoryBot.create(:user) }
 
@@ -67,10 +67,6 @@ RSpec.describe MoviesController, type: :controller do
     end
 
     context 'when a date sorting is chosen' do
-      let(:movie_neutral) { FactoryBot.create(:movie, created_at: 2.months.ago) }
-      let(:movie_liked) { FactoryBot.create(:movie, created_at: 4.month.ago) }
-      let(:movie_hated) { FactoryBot.create(:movie, created_at: 3.months.ago) }
-
       it 'assigns @movies with the correct ordering' do
         get :index, params: { sort_by: 'date' }
         expect(assigns(:movies)).to eq([ movie_neutral, movie_hated, movie_liked ])
@@ -78,13 +74,6 @@ RSpec.describe MoviesController, type: :controller do
     end
 
     context 'when a likes sorting is chosen' do
-      before do
-        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
-      end
-
       it 'assigns @movies with the correct ordering' do
         get :index, params: { sort_by: 'likes' }
         expect(assigns(:movies).to_a).to eq([ movie_liked, movie_neutral, movie_hated ])
@@ -92,17 +81,6 @@ RSpec.describe MoviesController, type: :controller do
     end
 
     context 'when a hates sorting is chosen' do
-      let(:movie_neutral) { FactoryBot.create(:movie) }
-      let(:movie_liked) { FactoryBot.create(:movie) }
-      let(:movie_hated) { FactoryBot.create(:movie) }
-
-      before do
-        FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
-        FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
-        FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
-      end
-
       it 'assigns @movies with the correct ordering' do
         get :index, params: { sort_by: 'hates' }
         expect(assigns(:movies).to_a).to eq([ movie_hated, movie_neutral, movie_liked ])
@@ -113,9 +91,11 @@ RSpec.describe MoviesController, type: :controller do
       let(:user1) { FactoryBot.create(:user) }
       let(:user2) { FactoryBot.create(:user) }
 
-      let(:movie_neutral) { FactoryBot.create(:movie, user: user1) }
-      let(:movie_liked) { FactoryBot.create(:movie, user: user1) }
-      let(:movie_hated) { FactoryBot.create(:movie, user: user2) }
+      before do
+        movie_neutral.update(user: user1)
+        movie_liked.update(user: user1)
+        movie_hated.update(user: user2)
+      end
 
       it 'assigns @movies only of the correct user' do
         get :index, params: { user_id: user1.id }
@@ -123,13 +103,6 @@ RSpec.describe MoviesController, type: :controller do
       end
 
       context 'and a likes sorting is chosen' do
-        before do
-          FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
-          FactoryBot.create_list(:vote, 1, :like, movie: movie_neutral)
-          FactoryBot.create_list(:vote, 1, :hate, movie: movie_neutral)
-          FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
-        end
-
         it 'assigns @movies with the correct ordering' do
           get :index, params: { sort_by: 'likes', user_id: user1.id }
           expect(assigns(:movies).to_a).to eq([ movie_liked, movie_neutral ])

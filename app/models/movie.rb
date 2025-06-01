@@ -8,15 +8,4 @@ class Movie < ApplicationRecord
   validates :description, presence: true
   validates :user, presence: true
 
-  def self.order_by_likes
-    Movie.left_joins(:likes).
-      group("movies.id").
-      order("COUNT(votes.id) DESC")
-  end
-
-  def self.order_by_hates
-    Movie.left_joins(:hates).
-      group("movies.id").
-      order("COUNT(votes.id) DESC")
-  end
 end

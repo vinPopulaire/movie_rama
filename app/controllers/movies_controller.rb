@@ -10,9 +10,9 @@ class MoviesController < ApplicationController
     if params[:sort_by] == "date"
       @movies = @movies.order(created_at: :desc)
     elsif params[:sort_by] == "likes"
-      @movies = @movies.order_by_likes
+      @movies = @movies.order(like_count: :desc)
     elsif params[:sort_by] == "hates"
-      @movies = @movies.order_by_hates
+      @movies = @movies.order(hate_count: :desc)
     else
       @movies = @movies.order(id: :desc)
     end

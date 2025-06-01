@@ -4,10 +4,8 @@ RSpec.describe 'Users should be able to sort with number of likes/hates/date', t
   scenario 'sort by likes' do
     signup
 
-    movie_liked = FactoryBot.create(:movie, title: 'Title1')
-    movie_hated = FactoryBot.create(:movie, title: 'Title2')
-    FactoryBot.create_list(:vote, 2, :like, movie: movie_liked)
-    FactoryBot.create_list(:vote, 1, :like, movie: movie_hated)
+    FactoryBot.create(:movie, like_count: 10, hate_count: 0, title: 'Title1')
+    FactoryBot.create(:movie, like_count: 0, hate_count: 10, title: 'Title2')
 
     click_on "Likes"
 
@@ -18,10 +16,8 @@ RSpec.describe 'Users should be able to sort with number of likes/hates/date', t
   scenario 'sort by hates' do
     signup
 
-    movie_liked = FactoryBot.create(:movie, title: 'Title1')
-    movie_hated = FactoryBot.create(:movie, title: 'Title2')
-    FactoryBot.create_list(:vote, 1, :hate, movie: movie_liked)
-    FactoryBot.create_list(:vote, 2, :hate, movie: movie_hated)
+    FactoryBot.create(:movie, like_count: 10, hate_count: 0, title: 'Title1')
+    FactoryBot.create(:movie, like_count: 0, hate_count: 10, title: 'Title2')
 
     click_on "Hates"
 
@@ -32,8 +28,8 @@ RSpec.describe 'Users should be able to sort with number of likes/hates/date', t
   scenario 'sort by date' do
     signup
 
-    movie_older = FactoryBot.create(:movie, title: 'Title1', created_at: 4.month.ago)
-    movie_newer = FactoryBot.create(:movie, title: 'Title2', created_at: 3.month.ago)
+    FactoryBot.create(:movie, title: 'Title1', created_at: 4.month.ago)
+    FactoryBot.create(:movie, title: 'Title2', created_at: 3.month.ago)
 
     click_on "Date"
 
