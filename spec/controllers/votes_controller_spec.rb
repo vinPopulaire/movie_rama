@@ -49,6 +49,10 @@ RSpec.describe VotesController, type: :controller do
           expect(assigns(:vote)).to be_persisted
         end
 
+        it 'updates the likes count' do
+          expect { subject }.to change { movie.reload.like_count }.by(1)
+        end
+
         it 'redirects to the movies index with a success notice' do
           subject
 
@@ -61,6 +65,10 @@ RSpec.describe VotesController, type: :controller do
 
         it 'does not create a new vote' do
           expect { subject }.to_not change(Vote, :count)
+        end
+
+        it 'does not update the likes count' do
+          expect { subject }.to_not change { movie.reload.like_count }
         end
 
         it 'renders the new template with an error flash' do
@@ -103,6 +111,13 @@ RSpec.describe VotesController, type: :controller do
           expect(vote.action).to eq("like")
           expect(response).to redirect_to(movies_path)
           expect(flash[:notice]).to eq('Your vote has changed!')
+        end
+
+        it 'updates the likes and hates count' do
+          expect {
+            subject
+          }.to change { movie.reload.like_count }.by(1)
+           .and change { movie.reload.hate_count }.by(-1)
         end
 
         context 'but the movie is owned by the user' do
@@ -150,6 +165,10 @@ RSpec.describe VotesController, type: :controller do
 
         expect(response).to redirect_to(movies_path)
         expect(flash[:notice]).to eq('You removed your vote!')
+      end
+
+      it 'updates the likes and hates count' do
+        expect { subject }.to change { movie.reload.like_count }.by(-1)
       end
     end
 

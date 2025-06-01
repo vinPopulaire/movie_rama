@@ -6,79 +6,113 @@ class VotesController < ApplicationController
   before_action :set_vote, only: [ :update, :destroy ]
 
   def create
-    @vote = Vote.new(user: current_user, movie: @movie, action: @action)
+    ActiveRecord::Base.transaction do
+      @vote = Vote.new(user: current_user, movie: @movie, action: @action)
 
-    if @vote.save
-      respond_to do |format|
-        format.html { redirect_to movies_path, notice: "Thanks for voting!" }
-        format.turbo_stream do
-          flash.now[:notice] = "Thanks for voting!"
-          render turbo_stream: [
-                   turbo_stream.replace("movie_#{@movie.id}",
-                                        partial: "movies/movie_preference_actions",
-                                        locals: {
-                                          movie: @movie,
-                                          like_count: @movie.likes.count,
-                                          hate_count: @movie.hates.count,
-                                          vote: @vote
-                                        }),
-                   turbo_stream.replace("flash", partial: "shared/notices")
-                 ]
+      if @vote.save
+        @action == :like ? @movie.like_count += 1 : @movie.hate_count += 1
+        @movie.save!
+
+        respond_to do |format|
+          format.html { redirect_to movies_path, notice: "Thanks for voting!" }
+          format.turbo_stream do
+            flash.now[:notice] = "Thanks for voting!"
+            render turbo_stream: [
+                    turbo_stream.replace("movie_#{@movie.id}",
+                                          partial: "movies/movie_preference_actions",
+                                          locals: {
+                                            movie: @movie,
+                                            like_count: @movie.like_count,
+                                            hate_count: @movie.hate_count,
+                                            vote: @vote
+                                          }),
+                    turbo_stream.replace("flash", partial: "shared/notices")
+                  ]
+          end
         end
+      else
+        raise ActiveRecord::Rollback
       end
-    else
-      respond_to do |format|
-        format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
-        format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
-      end
+    end
+  rescue
+    respond_to do |format|
+      format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
+      format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
     end
   end
 
   def update
-    if @vote.update(action: @action)
-      respond_to do |format|
-        format.html { redirect_to movies_path, notice: "Your vote has changed!" }
-        format.turbo_stream do
-          flash.now[:notice] = "Thanks for voting!"
-          render turbo_stream: [
-                   turbo_stream.replace("movie_#{@movie.id}",
-                                        partial: "movies/movie_preference_actions",
-                                        locals: {
-                                          movie: @movie,
-                                          like_count: @movie.likes.count,
-                                          hate_count: @movie.hates.count,
-                                          vote: @vote
-                                        }),
-                   turbo_stream.replace("flash", partial: "shared/notices")
-                 ]
+    ActiveRecord::Base.transaction do
+      if @vote.update(action: @action)
+        if @action ==:like
+          @movie.like_count +=1
+          @movie.hate_count -=1
+        else
+          @movie.like_count -=1
+          @movie.hate_count +=1
         end
+        @movie.save!
+
+        respond_to do |format|
+          format.html { redirect_to movies_path, notice: "Your vote has changed!" }
+          format.turbo_stream do
+            flash.now[:notice] = "Thanks for voting!"
+            render turbo_stream: [
+                    turbo_stream.replace("movie_#{@movie.id}",
+                                          partial: "movies/movie_preference_actions",
+                                          locals: {
+                                            movie: @movie,
+                                            like_count: @movie.like_count,
+                                            hate_count: @movie.hate_count,
+                                            vote: @vote
+                                          }),
+                    turbo_stream.replace("flash", partial: "shared/notices")
+                  ]
+          end
+        end
+      else
+        raise ActiveRecord::Rollback
       end
-    else
-      respond_to do |format|
-        format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
-        format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
-      end
+    end
+  rescue
+    respond_to do |format|
+      format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
+      format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
     end
   end
 
   def destroy
-    @vote.destroy
-    respond_to do |format|
-      format.html { redirect_to movies_path, notice: "You removed your vote!" }
-      format.turbo_stream do
-        flash.now[:notice] = "You removed your vote!"
-        render turbo_stream: [
-                 turbo_stream.replace("movie_#{@movie.id}",
-                                      partial: "movies/movie_preference_actions",
-                                      locals: {
-                                        movie: @movie,
-                                        like_count: @movie.likes.count,
-                                        hate_count: @movie.hates.count,
-                                        vote: nil
-                                      }),
-                 turbo_stream.replace("flash", partial: "shared/notices")
-               ]
+    ActiveRecord::Base.transaction do
+      action = @vote.action
+      if @vote.destroy
+        action == "like" ? @movie.like_count -=1 : @movie.hate_count -=1
+        @movie.save!
+
+        respond_to do |format|
+          format.html { redirect_to movies_path, notice: "You removed your vote!" }
+          format.turbo_stream do
+            flash.now[:notice] = "You removed your vote!"
+            render turbo_stream: [
+                    turbo_stream.replace("movie_#{@movie.id}",
+                                          partial: "movies/movie_preference_actions",
+                                          locals: {
+                                            movie: @movie,
+                                            like_count: @movie.like_count,
+                                            hate_count: @movie.hate_count,
+                                            vote: nil
+                                          }),
+                    turbo_stream.replace("flash", partial: "shared/notices")
+                  ]
+          end
+        end
+      else
+        raise ActiveRecord::Rollback
       end
+    end
+  rescue
+    respond_to do |format|
+      format.html { redirect_to movies_path, alert: @vote.errors.full_messages.join("<br>").html_safe }
+      format.turbo_stream { flash.now[:alert] = @vote.errors.full_messages.join("<br>").html_safe }
     end
   end
 
