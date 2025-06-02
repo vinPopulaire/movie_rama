@@ -70,7 +70,7 @@ group :test do
 
   gem "factory_bot_rails"
 
-  gem 'shoulda-matchers', '~> 6.0'
+  gem 'shoulda-matchers', '~> 6.5'
 
   gem 'rails-controller-testing'
 
